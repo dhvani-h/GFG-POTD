@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maxSumSubarray(vector<int> &arr) {
+        int noSkip = arr[0];
+        int oneSkip = INT_MIN;
+        int ans = arr[0];
+
+        for (int i = 1; i < arr.size(); i++) {
+            int prevNoSkip = noSkip;
+            int prevOneSkip = oneSkip;
+
+            noSkip = max(prevNoSkip + arr[i], arr[i]);
+
+            if (prevOneSkip == INT_MIN)
+                oneSkip = prevNoSkip;   // Delete current element
+            else
+                oneSkip = max(prevNoSkip, prevOneSkip + arr[i]);
+
+            ans = max(ans, max(noSkip, oneSkip));
+        }
+
+        return ans;
+    }
+};
