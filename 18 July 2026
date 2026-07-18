@@ -1,0 +1,57 @@
+class Solution:
+    def findWays(self, matrix, k):
+        MOD = 10**9 + 7
+        n, m = len(matrix), len(matrix[0])
+
+        maxOneCol = [-1] * n
+        for r in range(n):
+            for c in range(m):
+                if matrix[r][c] == 1:
+                    maxOneCol[r] = c
+        maxOneRow = [-1] * m
+        for c in range(m):
+            for r in range(n):
+                if matrix[r][c] == 1:
+                    maxOneRow[c] = r
+
+        i0 = [[n] * m for _ in range(n)]
+        for c1 in range(m):
+            nxt = n
+            for r in range(n - 1, -1, -1):
+                if maxOneCol[r] >= c1:
+                    nxt = r
+                i0[r][c1] = nxt
+
+        j0 = [[m] * m for _ in range(n)]
+        for r1 in range(n):
+            nxt = m
+            for c in range(m - 1, -1, -1):
+                if maxOneRow[c] >= r1:
+                    nxt = c
+                j0[r1][c] = nxt
+
+        f_prev = [[1 if i0[r][c] < n else 0 for c in range(m)] for r in range(n)]
+
+        if k == 1:
+            return f_prev[0][0] % MOD
+
+        for _ in range(2, k + 1):
+            sufCol = [[0] * (n + 1) for _ in range(m)]
+            for c1 in range(m):
+                for r in range(n - 1, -1, -1):
+                    sufCol[c1][r] = (f_prev[r][c1] + sufCol[c1][r + 1]) % MOD
+
+            sufRow = [[0] * (m + 1) for _ in range(n)]
+            for r1 in range(n):
+                for c in range(m - 1, -1, -1):
+                    sufRow[r1][c] = (f_prev[r1][c] + sufRow[r1][c + 1]) % MOD
+
+            f_cur = [[0] * m for _ in range(n)]
+            for r1 in range(n):
+                for c1 in range(m):
+                    hIdx = min(max(r1, i0[r1][c1]) + 1, n)
+                    vIdx = min(max(c1, j0[r1][c1]) + 1, m)
+                    f_cur[r1][c1] = (sufCol[c1][hIdx] + sufRow[r1][vIdx]) % MOD
+            f_prev = f_cur
+
+        return f_prev[0][0] % MOD
