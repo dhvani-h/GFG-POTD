@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<vector<int>> levelSort(vector<int>& arr) {
+        vector<vector<int>> ans;
+        int n = arr.size();
+        int start = 0;
+        int levelSize = 1;
+
+        while (start < n) {
+            int end = min(start + levelSize, n);
+            vector<int> level(arr.begin() + start, arr.begin() + end);
+
+            sort(level.begin(), level.end());
+            ans.push_back(level);
+
+            start = end;
+            levelSize *= 2;
+        }
+
+        return ans;
+    }
+};
